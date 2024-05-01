@@ -5,7 +5,7 @@ description = "Python SDK for statsnet.co"
 authors = ["statsnet <hi@statsnet.co>"]
 readme = "README.md"
 packages = [
-    { include = "statsnet-python-sdk" },
+    { include = "statsnet_python_sdk" },
 ]
 
 
