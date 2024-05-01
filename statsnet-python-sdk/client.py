@@ -31,16 +31,14 @@ class Client:
             headers={"Authorization": f"Bearer {api_key}"}, base_url="https://statsnet.co/api/v2"
         )
 
-    def __request(self, method: str, endpoint: str, params: dict = None, json: Any = None) -> Any:
+    def __request(self, method: str, endpoint: str, params: dict = None, json: Any = None) -> bytes:
         r = self.client.request(method, endpoint, params=params, json=json)
         if not r.is_success:
             raise ClientException(endpoint, r.status_code, r.content)
-        match r.headers["Content-Type"]:
-            case "application/json":
-                return r.json()
+        return r.content
 
-    def __get(self, endpoint: str, params: dict = None, json: Any = None) -> Any:
+    def __get(self, endpoint: str, params: dict = None, json: Any = None) -> bytes:
         return self.__request("GET", endpoint, params, json)
 
-    def __post(self, endpoint: str, params: dict = None, json: Any = None) -> Any:
+    def __post(self, endpoint: str, params: dict = None, json: Any = None) -> bytes:
         return self.__request("POST", endpoint, params, json)
