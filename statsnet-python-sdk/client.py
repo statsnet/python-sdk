@@ -6,9 +6,9 @@ import httpx
 
 class ClientException(Exception):
     def __init__(self, endpoint: str, status_code: int, response_content: bytes) -> NoReturn:
-        self.endpoint = endpoint
-        self.status_code = status_code
-        self.response_content = response_content
+        self.endpoint: str = endpoint
+        self.status_code: int = status_code
+        self.response_content: bytes = response_content
 
     def __str__(self) -> str:
         return f"Request to {self.endpoint} unsuccessful. Status code: {self.status_code}. Response content: {self.response_content}"
@@ -19,6 +19,7 @@ class ClientException(Exception):
             self.status_code,
             self.response_content,
         )
+
 
 class Client:
     def __init__(self, api_key: str = None):
