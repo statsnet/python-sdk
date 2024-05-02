@@ -1,6 +1,6 @@
 .PHONY: fmt build publish bump-patch-version bump-minor-version bump-major-version tag-current-version
 fmt:
-	@black statsnet-python-sdk/
+	@black statsnet_python_sdk/
 build:
 	@poetry build
 publish:

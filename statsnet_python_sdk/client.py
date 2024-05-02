@@ -1,24 +1,11 @@
+import json
 import os
-from typing import Any, NoReturn
+from typing import Any, Optional
 
 import httpx
 
-
-class ClientException(Exception):
-    def __init__(self, endpoint: str, status_code: int, response_content: bytes) -> NoReturn:
-        self.endpoint: str = endpoint
-        self.status_code: int = status_code
-        self.response_content: bytes = response_content
-
-    def __str__(self) -> str:
-        return f"Request to {self.endpoint} unsuccessful. Status code: {self.status_code}. Response content: {self.response_content}"
-
-    def __repr__(self) -> str:
-        return "<ClientException(endpoint='%s', status_code=%s, response_content='%s')>" % (
-            self.endpoint,
-            self.status_code,
-            self.response_content,
-        )
+from exceptions import ClientException, InvalidParams
+from validations import validate_id, validate_limit, validate_jurisdiction
 
 
 class Client:
@@ -28,12 +15,10 @@ class Client:
         if not api_key:
             raise ValueError("No api key provided. Set via argument or environment variable STATSNET_API_KEY.")
 
-        self.client: httpx.Client = httpx.Client(
-            headers={"Authorization": f"Bearer {api_key}"}, base_url="https://statsnet.co/api/v2"
-        )
+        self.__client: httpx.Client = httpx.Client(headers={"X-API-KEY": api_key}, base_url="https://dev.statsnet.co/api/v2")
 
     def __request(self, method: str, endpoint: str, params: dict = None, json: Any = None) -> bytes:
-        r = self.client.request(method, endpoint, params=params, json=json)
+        r = self.__client.request(method, endpoint, params=params, json=json)
         if not r.is_success:
             raise ClientException(endpoint, r.status_code, r.content)
         return r.content
@@ -43,3 +28,56 @@ class Client:
 
     def __post(self, endpoint: str, params: dict = None, json: Any = None) -> bytes:
         return self.__request("POST", endpoint, params, json)
+
+    def me(self) -> dict:
+        r = self.__get("/user/me")
+        return json.loads(r)
+
+    def search(self, query: str, jurisdiction: Optional[str] = None, limit: int = 5) -> dict:
+        if not query:
+            raise InvalidParams("query must be of type str and not empty", "query", query)
+        validate_limit(limit)
+        validate_jurisdiction(True, jurisdiction)
+
+        filters = {"jurisdiction": [jurisdiction]} if jurisdiction else {}
+        r = self.__post(
+            "business/search",
+            params={"limit": limit},
+            json={"filters": filters, "query": query},
+        )
+        return json.loads(r)
+
+    def get_company(self, jurisdiction: str, id: int) -> dict:
+        validate_jurisdiction(False, jurisdiction)
+        validate_id(id)
+        r = self.__get(f"business/{jurisdiction}/{id}/paid")
+        return json.loads(r)
+
+    def get_company_meta(self, id: int) -> dict:
+        validate_id(id)
+        r = self.__get(f"business/{id}/data/view/meta")
+        return json.loads(r)
+
+    def get_company_court_cases(self, id: int, limit: int = 5) -> dict:
+        validate_id(id)
+        validate_limit(limit)
+        r = self.__get(f"business/{id}/court_cases", {"limit": limit})
+        return json.loads(r)
+
+    def get_company_departments(self, id: int, limit: int = 5) -> dict:
+        validate_id(id)
+        validate_limit(limit)
+        r = self.__get(f"business/{id}/department", {"limit": limit})
+        return json.loads(r)
+
+    def get_company_gov_contracts(self, id: int, limit: int = 5) -> dict:
+        validate_id(id)
+        validate_limit(limit)
+        r = self.__get(f"business/{id}/gov_contracts", {"limit": limit})
+        return json.loads(r)
+
+    def get_company_events(self, id: int, limit: int = 5) -> dict:
+        validate_id(id)
+        validate_limit(limit)
+        r = self.__get(f"business/{id}/events", {"limit": limit})
+        return json.loads(r)
