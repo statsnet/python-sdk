@@ -23,5 +23,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 120
-
-[tool.poetry_bumpversion.file."statsnet_python_sdk/__init__.py"]
