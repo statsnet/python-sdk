@@ -18,7 +18,7 @@ class ClientException(Exception):
         )
 
 
-class InvalidParams(Exception):
+class InvalidParamsException(Exception):
     def __init__(self, message: str, key: str, value: Any) -> NoReturn:
         self.message: str = message
         self.key: str = key

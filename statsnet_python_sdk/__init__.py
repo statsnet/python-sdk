@@ -1,4 +1,5 @@
-from .client import ClientException, Client
+from .client import Client
+from .exceptions import ClientException, InvalidParamsException
 
-__all__ = ["ClientException", "Client"]
-__version__ = "1.0.0"
+__all__ = ["ClientException", "InvalidParamsException", "Client"]
+__version__ = "0.0.3"
