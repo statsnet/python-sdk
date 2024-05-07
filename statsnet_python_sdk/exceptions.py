@@ -28,4 +28,4 @@ class InvalidParamsException(Exception):
         return f"Invalid params for {self.key}: {self.value}. Message: {self.message}"
 
     def __repr__(self) -> str:
-        return "<InvalidParams(message='%s', key='%s', value='%s')>" % (self.message, self.key, self.value)
+        return "<InvalidParams(message='%s', key='%s', value=%s)>" % (self.message, self.key, repr(self.value))
