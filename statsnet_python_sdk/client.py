@@ -6,6 +6,16 @@ import httpx
 
 from .exceptions import ClientException, InvalidParamsException
 from .validations import validate_id, validate_limit, validate_jurisdiction
+from .models import (
+    UserResponse,
+    Search,
+    CompanyResult,
+    DataViewResult,
+    CourtCaseResult,
+    GovContractsWithMeta,
+    EventsWithMeta,
+    RelationResult,
+)
 
 
 class Client:
@@ -31,11 +41,11 @@ class Client:
     def __post(self, endpoint: str, params: dict = None, json: Any = None) -> bytes:
         return self.__request("POST", endpoint, params, json)
 
-    def me(self) -> dict:
+    def me(self) -> UserResponse:
         r = self.__get("/user/me")
         return json.loads(r)
 
-    def search(self, query: str, jurisdiction: Optional[str] = None, limit: int = 5) -> dict:
+    def search(self, query: str, jurisdiction: Optional[str] = None, limit: int = 5) -> Search:
         if not query:
             raise InvalidParamsException("query must be of type str and not empty", "query", query)
         validate_limit(limit)
@@ -49,18 +59,18 @@ class Client:
         )
         return json.loads(r)
 
-    def get_company(self, jurisdiction: str, id: int) -> dict:
+    def get_company(self, jurisdiction: str, id: int) -> CompanyResult:
         validate_jurisdiction(False, jurisdiction)
         validate_id(id)
         r = self.__get(f"/business/{jurisdiction}/{id}/paid")
         return json.loads(r)
 
-    def get_company_meta(self, id: int) -> dict:
+    def get_company_meta(self, id: int) -> DataViewResult:
         validate_id(id)
         r = self.__get(f"/business/{id}/data/view/meta")
         return json.loads(r)
 
-    def get_company_court_cases(self, id: int, limit: int = 5) -> dict:
+    def get_company_court_cases(self, id: int, limit: int = 5) -> CourtCaseResult:
         validate_id(id)
         validate_limit(limit)
         r = self.__get(f"/business/{id}/court_cases", {"limit": limit})
@@ -72,26 +82,26 @@ class Client:
         r = self.__get(f"/business/{id}/department", {"limit": limit})
         return json.loads(r)
 
-    def get_company_gov_contracts(self, id: int, limit: int = 5) -> dict:
+    def get_company_gov_contracts(self, id: int, limit: int = 5) -> GovContractsWithMeta:
         validate_id(id)
         validate_limit(limit)
         r = self.__get(f"/business/{id}/gov_contracts", {"limit": limit})
         return json.loads(r)
 
-    def get_company_events(self, id: int, limit: int = 5) -> dict:
+    def get_company_events(self, id: int, limit: int = 5) -> EventsWithMeta:
         validate_id(id)
         validate_limit(limit)
         r = self.__get(f"/business/{id}/events", {"limit": limit})
         return json.loads(r)
 
-    def get_company_relations(self, id: int, limit: int = 5) -> dict:
+    def get_company_relations(self, id: int, limit: int = 5) -> RelationResult:
         validate_id(id)
         validate_limit(limit)
         r = self.__get(f"/business/{id}/relations/table", {"limit": limit})
         return json.loads(r)
 
-    def get_company_by_identifier(self, identifier: str) -> dict:
+    def get_company_by_identifier(self, identifier: str) -> CompanyResult:
         if not type(identifier) is str:
             raise InvalidParamsException("identifier must be of type str and not empty", "identifier", identifier)
-        r = self.__get(f"/business/{identifier}/paid")
+        r = self.__get(f"/business/{identifier}/bin")
         return json.loads(r)

@@ -16,7 +16,7 @@ Import statsnet client and set API keys:
 ```python
 from statsnet_python_sdk import Client
 
-token = "123"
+token = "123" # or set via STATSNET_API_KEY environment variable
 ```
 
 ```python
