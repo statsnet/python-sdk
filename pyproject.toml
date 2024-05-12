@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "statsnet-python-sdk"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python SDK for statsnet.co"
 authors = ["statsnet <hi@statsnet.co>"]
 readme = "README.md"
