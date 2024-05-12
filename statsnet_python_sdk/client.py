@@ -149,7 +149,7 @@ class AsyncClient:
         return await self.__request("POST", endpoint, params, json)
 
     async def me(self) -> UserResponse:
-        r = self.__get("/user/me")
+        r = await self.__get("/user/me")
         return json.loads(r)
 
     async def search(self, query: str, jurisdiction: Optional[str] = None, limit: int = 5) -> Search:
